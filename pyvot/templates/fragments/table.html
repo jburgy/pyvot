@@ -1,0 +1,42 @@
+<table class="pvtTable" data-numrows="4" data-numcols="6">
+    <thead>
+        {% for name, col_label in col_labels.items() %}
+        <tr>
+            {% if loop.first %}
+            {% for row_label in row_labels %}
+            <th class="pvtAxisLabel" rowspan="{{ col_labels|length }}">{{ row_label }}</th>
+            {% endfor %}
+            {% endif %}
+            {% for label in col_label %}
+            {% if label %}
+            <th class="pvtColLabel" colspan="{{ label.colspan|default(1) }}" rowspan="{{ label.rowspan|default(1) }}">
+                {{- label.value -}}
+            </th>
+            {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </thead>
+    <tbody>
+        {% block body %}
+        {% for row in values %}
+        <tr>
+            {% set row_loop = loop.index0 %}
+            {% for row_label in row_labels.values() %}
+            {% set label = row_label[row_loop] %}
+            {% if label %}
+            <th class="pvtRowLabel" rowspan="{{ label.rowspan|default(1) }}" colspan="{{ label.colspan|default(1) }}">
+                {{- label.value -}}
+            </th>
+            {% endif %}
+            {% endfor %}
+            {% for cell in row %}
+            <td class="pvtVal row{{row_loop}} col{{loop.index0}}" data-value="{{ cell.value }}">
+                {{- cell.formatted or cell.data -}}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        {% endblock %}
+    </tbody>
+</table>

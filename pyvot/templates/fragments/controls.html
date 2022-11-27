@@ -1,0 +1,34 @@
+<form hx-trigger="change" hx-post="/table" hx-target="#target" hx-swap="outerHTML">
+    <fieldset autocomplete="off">
+        <legend>Controls</legend>
+        <label for="rows">Rows</label>
+        <select multiple name="rows">
+            {% for row in rows %}
+            <option selected value="{{ row }}">{{ row }}</option>
+            {% endfor %}
+            {% for item in rest %}
+            <option value="{{ item }}">{{ item }}</option>
+            {% endfor %}
+        </select>
+        <hr />
+        <label for="cols">Cols</label>
+        <select multiple name="cols">
+            {% for col in cols %}
+            <option selected value="{{ col }}">{{ col }}</option>
+            {% endfor %}
+            {% for item in rest %}
+            <option value="{{ item }}">{{ item }}</option>
+            {% endfor %}
+        </select>
+        <hr />
+        <label for="measures">Measures</label>
+        <select multiple name="measures">
+            {% for measure in measures %}
+            <option selected value="{{ measure }}">{{ measure }}</option>
+            {% endfor %}
+            {% for item in rest %}
+            <option value="{{ item }}">{{ item }}</option>
+            {% endfor %}
+        </select>
+    </fieldset>
+</form>

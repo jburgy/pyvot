@@ -1,0 +1,69 @@
+/* go for https://i.imgur.com/XLkqfKC.gifv */
+
+fieldset {
+    display: flex;
+    flex-direction: column;
+}
+
+table.pvtTable {
+    --table-highlight: var(--focus-highlight);
+    --background-body: var(--background-main);
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+table.pvtTable>thead :is(th.pvtAxisLabel, tr:last-of-type th.pvtColLabel) {
+    border-bottom: thin solid var(--text);
+}
+
+/* https://css-tricks.com/position-sticky-and-table-headers/
+table.pvtTable>thead th {
+    position: sticky;
+    top: 0;
+}
+*/
+
+th.pvtAxisLabel,
+th.pvtColLabel,
+th.pvtRowLabel {
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+th.pvtAxisLabel {
+    vertical-align: bottom;
+}
+
+th.pvtColLabel,
+td.pvtVal {
+    text-align: right;
+}
+
+th.pvtRowLabel {
+    vertical-align: text-top;
+}
+
+td.pvtVal[data-value] {
+    position: relative;
+}
+
+td.pvtVal[data-value]:before {
+    content: attr(data-value);
+    visibility: hidden;
+    opacity: 0;
+    background-color: var(--focus-highlight);
+    color: var(--text);
+    border-radius: var(--highlight-border-radius);
+    padding: 1ch 1ch;
+    transition: opacity .3s ease-in-out;
+
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    top: 110%;
+}
+
+td.pvtVal[data-value]:hover:before {
+    opacity: 1;
+    visibility: visible;
+}

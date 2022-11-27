@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "pyvot"
+version = "0.1.0"
+description = ""
+authors = ["Jan Burgy <jburgy@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.85.1"
+uvicorn = {extras = ["standard"], version = "^0.19.0"}
+jinja2 = "^3.1.2"
+python-multipart = "^0.0.5"
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
+
+[tool.poetry.scripts]
+start = "pyvot.main:start"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

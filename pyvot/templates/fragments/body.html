@@ -1,0 +1,8 @@
+<div style="display: flex" id="target">
+    {% include "fragments/controls.html" %}
+
+    {% if col_labels or row_labels %}
+    {% include "fragments/table.html" %}
+    {% endif %}
+
+</div>
