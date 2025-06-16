@@ -1,7 +1,7 @@
 [project]
 name = "pyvot"
 version = "0.1.0"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 description = ""
 authors = ["Jan Burgy <jburgy@gmail.com>"]
 readme = "README.md"
