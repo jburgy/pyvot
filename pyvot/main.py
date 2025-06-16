@@ -1,5 +1,6 @@
-import uvicorn
+import uvicorn  # type: ignore
 from sqlite3 import Connection, Row, connect
+from typing import Generator
 
 from fastapi import Depends, FastAPI, Form, Request
 from fastapi.exceptions import RequestValidationError
@@ -24,7 +25,7 @@ async def validation_exception_handler(request: Request, exc: Exception):
     return PlainTextResponse(str(), status_code=400)
 
 
-def _connect() -> Connection:
+def _connect() -> Generator[Connection, None, None]:
     with connect("elections.db", check_same_thread=False) as conn:
         conn.row_factory = Row
         yield conn

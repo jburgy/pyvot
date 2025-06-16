@@ -2,8 +2,11 @@ from bisect import bisect
 from itertools import groupby
 from operator import itemgetter
 from sqlite3 import Connection, Row
+from typing import Callable, Optional, Union, cast
 
 from jinja2 import DictLoader, Environment
+
+one_or_more = Union[str, tuple[str, ...]]  # type: ignore
 
 _ENV = Environment(
     trim_blocks=True,
@@ -40,10 +43,16 @@ def table_info(conn: Connection, table: str) -> list[Row]:
     return conn.execute(_ENV.get_template("table_info").render(table=table)).fetchall()
 
 
-def _pivot(items: list[Row], measures, get_row_key, get_col_key):
-    row_keys: list[tuple[str]] = []
-    col_keys: list[tuple[str]] = []
-    values: list[list[float]] = []
+def _pivot(
+    items: list[Row],
+    measures: dict[str, Callable],
+    get_row_key: Callable[[Row], one_or_more],
+    get_col_key: Callable[[Row], tuple[str, ...]],
+) -> tuple[list[one_or_more], list[one_or_more], list[list[Optional[float]]]]:
+    row_keys: list[one_or_more] = []
+    col_keys: list[one_or_more] = []
+    values: list[list[Optional[float]]] = []
+    last: list[Optional[float]] = []
     for item in items:
         row_key = get_row_key(item)
         if not row_keys or row_key != row_keys[-1]:
@@ -69,22 +78,22 @@ def _pivot(items: list[Row], measures, get_row_key, get_col_key):
     return row_keys, col_keys, values
 
 
-def _ensure_tuples(items):
+def _ensure_tuples(items: list[one_or_more]) -> list[tuple[str, ...]]:
     return [item if isinstance(item, tuple) else (item,) for item in items]
 
 
-def _compress(names: list[str], keys: list[tuple[str]], span_name: str):
+def _compress(names: list[str], keys: list[tuple[str, ...]], span_name: str):
     return {
         name.title(): [
             item
             for label in [
                 {
                     span_name: sum(1 for _ in group),
-                    "value": (key[-1] if isinstance(key, tuple) else key).title(),
+                    "value": cast(str, key[-1] if isinstance(key, tuple) else key).title(),
                 }
                 for key, group in groupby(keys, itemgetter(*range(depth + 1)))
             ]
-            for item in [label] + [None] * (label[span_name] - 1)
+            for item in [label] + [None] * (label[span_name] - 1)  # type: ignore
         ]
         for depth, name in enumerate(names)
     }
@@ -95,7 +104,7 @@ def pivot_table(
     table: str,
     rows: list[str],
     cols: list[str],
-    measures: dict,
+    measures: dict[str, Callable],
     format: str = "{:.2f}",
 ) -> dict:
     if not rows:
@@ -111,8 +120,8 @@ def pivot_table(
     row_labels, col_labels, values = _pivot(
         items,
         measures,
-        itemgetter(*rows) if rows else lambda _: "Total",
-        itemgetter(*cols) if cols else lambda _: (),
+        cast(Callable[[Row], Union[str, tuple[str, ...]]], itemgetter(*rows) if rows else lambda _: "Total"),
+        cast(Callable[[Row], tuple[str, ...]], itemgetter(*cols) if cols else lambda _: ()),
     )
     formatter = format.format
 
